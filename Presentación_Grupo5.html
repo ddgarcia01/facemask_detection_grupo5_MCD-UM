@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Learning - Práctica 4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .slide:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .title-slide::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .title-slide .content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .title-slide h1 {
+            color: white;
+            -webkit-text-fill-color: white;
+            background: none;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #34495e;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+        }
+
+        .date-location {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 40px;
+        }
+
+        .team-members {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .team-members h3 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .team-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .team-member {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            font-weight: 500;
+            transition: transform 0.3s ease;
+        }
+
+        .team-member:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .index-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .index-item {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .index-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);
+        }
+
+        .content-section {
+            margin-bottom: 30px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .problem-card {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .problem-card:hover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .methodology-timeline {
+            position: relative;
+            margin: 30px 0;
+        }
+
+        .timeline-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #667eea;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 0 15px 15px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            border-left-width: 8px;
+            padding-left: 30px;
+        }
+
+        .timeline-item h4 {
+            color: #2c3e50;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .metrics-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin: 30px 0;
+        }
+
+        .metrics-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .metrics-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .metrics-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.3s ease;
+        }
+
+        .metrics-table tr:hover td {
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+
+        .best-score {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            padding: 5px 10px;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tech-item {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #2c3e50;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 154, 158, 0.3);
+        }
+
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .challenge-card {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 107, 107, 0.3);
+        }
+
+        .conclusions-list {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .conclusions-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .conclusions-list li {
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .conclusions-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #fff;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.8em; }
+            h3 { font-size: 1.4em; }
+            
+            .problem-grid,
+            .index-grid,
+            .tech-stack,
+            .challenges-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Portada -->
+        <div class="slide title-slide fade-in">
+            <div class="content">
+                <h1>Práctica 4 – Proyecto Grupal</h1>
+                <div class="subtitle">Deep Learning (Grupo 5)</div>
+                <div class="date-location">Montevideo, 29 de agosto 2025</div>
+                
+                <div class="team-members">
+                    <h3>Integrantes del Grupo</h3>
+                    <div class="team-list">
+                        <div class="team-member">Diego García</div>
+                        <div class="team-member">Mathías Pérez</div>
+                        <div class="team-member">Eduardo Mussini</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Sumario -->
+        <div class="slide fade-in">
+            <h2>📋 Sumario</h2>
+            <div class="index-grid">
+                <div class="index-item">1. Introducción y Problema</div>
+                <div class="index-item">2. Metodología y Ciclo de Vida</div>
+                <div class="index-item">3. Diseño del Modelo y Demostración</div>
+                <div class="index-item">4. Resultados, Desafíos y Conclusiones</div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Introducción y Problema -->
+        <div class="slide fade-in">
+            <h2>🎯 1. Introducción y Problema</h2>
+            
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3>🎭 Problema Principal</h3>
+                    <p><strong>Clasificación de imágenes en 3 clases:</strong></p>
+                    <ul style="margin-top: 15px; padding-left: 20px;">
+                        <li>✅ Usa mascarilla correctamente</li>
+                        <li>❌ No usa mascarilla</li>
+                        <li>⚠️ Usa mascarilla incorrectamente</li>
+                    </ul>
+                </div>
+                
+                <div class="problem-card">
+                    <h3>💼 Aplicaciones</h3>
+                    <ul style="padding-left: 20px;">
+                        <li><strong>🏥 Salud:</strong> Control sanitario</li>
+                        <li><strong>🔒 Seguridad:</strong> Monitoreo automático</li>
+                        <li><strong>🏭 Industria:</strong> Cumplimiento normativo</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📊 Dataset Utilizado</h4>
+                <p><strong>Face Mask Detection</strong> - Kaggle (2020)<br>
+                Creado durante la pandemia de COVID-19 cuando las mascarillas eran la principal forma de protección.</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Preguntas Previas -->
+        <div class="slide fade-in">
+            <h2>🤔 Preguntas Previas al Proyecto</h2>
+            
+            <div class="content-section">
+                <h3>¿Se necesita Deep Learning?</h3>
+                <div class="problem-grid">
+                    <div class="problem-card">
+                        <strong>✓ Capacidad de autoaprendizaje</strong><br>
+                        <strong>✓ Mayor generalización</strong>
+                        <strong>✓ Alto rendimiento</strong><br>
+                        <strong>✓ Mayor robustez</strong>
+                    </div>
+                </div>
+                <h3>¿Contamos con los recursos?</h3>
+                <div class="problem-grid">
+                    <div class="problem-card">
+                        <strong>✓ Personas</strong><br>
+                        <strong>✓ Infraestructura</strong>
+                        <strong>✓ Conocimiento</strong>
+                    </div>
+                </div>
+                <h3>¿Es ético?</h3>
+                <div class="problem-grid">
+                    <div class="problem-card">
+                        <strong>✓ Imagenes publicas</strong><br>
+                        <strong>✓ Aplicación con fines de seguridad sanitaria</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>🏗️ Arquetipo del Proyecto: Software 2.0</h3>
+                <p style="font-size: 1.1em; line-height: 1.6;">
+                    Crear un clasificador que aprenda automáticamente los rasgos de las imágenes 
+                    sin intervención humana para realizar la tarea de clasificación.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>💡 Solución de Alto Impacto y Bajo Costo</h4>
+                <ul style="padding-left: 20px; margin-top: 15px;">
+                    <li>⚡ Alertas en tiempo real para reducir contagios</li>
+                    <li>🤖 Automatización de tareas manuales costosas</li>
+                    <li>💰 Impacto económico favorable</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Metodología -->
+        <div class="slide fade-in">
+            <h2>⚙️ 2. Metodología y Ciclo de Vida</h2>
+            
+            <div class="methodology-timeline">
+                <div class="timeline-item">
+                    <h4>📋 Planificación</h4>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Se determinó la tarea, los requisitos y la viabilidad. Se detectó desbalance de clase en los datos y por ende la necesidad de aumentarlos.</li>
+                        <li>Se definió un umbral de accuracy superior a <strong>90%+</strong>, en función del tiempo y recursos disponible para la tarea, considerando la complejidad del modelo y la calidad de los datos.</li>
+                        <li>Se estableció un entorno de trabajo compartido mediante google colab. Posteriormente las distintas fases del proyecto se cargaron en Github.</li>
+                        <li>Se partió desde un modelo base empleando un MLP</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>📊 Recolección y Etiquetado</h4>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Datos originales: 853 imágenes JPG + etiquetas XML</li>
+                        <li>Procesamiento: extracción de rostros → 4,076 imágenes</li>
+                        <li>Undersampling | Oversampling | Data Augmentation</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>🔬 Exploración del Modelo</h4>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li><strong>MLP:</strong> 93% accuracy (baseline)</li>
+                        <li><strong>CNN:</strong> 94% accuracy (mejor en clases minoritarias)</li>
+                        <li><strong>TL-FT:</strong> 96% accuracy (mejor generalización)</li>
+                    </ul>
+                </div>
+            </div>
+        
+        <!-- Slide 6: Refinamiento -->
+        <div class="slide fade-in">
+            <h3>🔧 Refinamiento del Modelo</h3>
+            
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h4>📚 Fase 1: Entrenamiento de la Cabeza</h4>
+                    <ul style="margin-top: 15px; padding-left: 20px; line-height: 1.6;">
+                        <li>Capas convolucionales de EfficientNetB0 <strong>congeladas</strong></li>
+                        <li>Optimizador: <strong>Adam</strong></li>
+                        <li>Pérdida: <strong>categorical crossentropy</strong></li>
+                        <li>Máximo 30 épocas + early stopping</li>
+                    </ul>
+                </div>
+
+                <div class="problem-card">
+                    <h4>🎯 Fase 2: Fine-tuning</h4>
+                    <ul style="margin-top: 15px; padding-left: 20px; line-height: 1.6;">
+                        <li>Descongelamiento selectivo (bloques 6 y 7) -> Capas superiores</li>
+                        <li>Excluidas capas BatchNormalization</li>
+                        <li>Tasa de aprendizaje muy baja: <strong>1e-5</strong></li>
+                        <li>Refinamiento manteniendo estabilidad</li>
+                    </ul>
+                </div>
+            </div>
+
+            </div>
+                <div class="timeline-item">
+                <h4>🔍 Evaluación del modelo</h4>
+                <ul style="margin-top: 10px; padding-left: 20px;">
+                    <li> Evaluación en conjunto de datos de validación estratificada</li>
+                    <li> Priorización de F1-score por desbalance del dataset</li>
+                </ul>
+            </div>
+
+            <div class="timeline-item">
+                <h4>🚀 Despliegue del modelo</h4>
+                <ul style="margin-top: 10px; padding-left: 20px;">
+                    <li> Export & versionado del modelo: label_map.json y config.json para portabilidad y reproducibilidad</li>
+                    <li> Implementación en Streamlit</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 30px;">
+            <h4>🛠️ Herramientas Utilizadas</h4>
+                <div class="tech-stack" style="margin-top: 20px;">
+                    <div class="tech-item">🐍 Python 3.12</div>
+                    <div class="tech-item">🧠 TensorFlow 2.16.2</div>
+                    <div class="tech-item">⚡ Keras 3.8.0</div>
+                </div>
+            </div>
+
+            <div class="highlight-box"style="margin-top: 30px;">
+            <h4>Organización de archivos</h4>
+                <div class="tech-stack" style="margin-top: 20px;">
+                    <div class="tech-item">Datos: 
+                        <br>images
+                        <br>annotations
+                        <br>images_processed
+                    </div>
+                    <div class="tech-item">Etapas: 
+                            <br>Proyecto 1 MLP: facemask.ipynb
+                            <br>Proyecto 2 CNN: facemask_p2.ipynb
+                            <br>Proyecto 3 TL: Facemask_p3_v5.ipynb
+                    </div>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 7: Diseño del Modelo -->
+        <div class="slide fade-in">
+            <h2>🏗️ 3. Diseño del Modelo y Demostración</h2>
+            
+            <div class="content-section">
+                <h3>🔧 Arquitectura del Modelo</h3>
+                <div class="problem-grid">
+                    <div class="problem-card">
+                        <h4>🎯 a) Modelo Preentrenado</h4>
+                        <p style="margin-top: 10px;">Selección de <strong>EfficientNetB0</strong> como base del modelo de transfer learning.</p>
+                    </div>
+                    <div class="problem-card">
+                        <h4>📊 b) Preparación del Dataset</h4>
+                        <p style="margin-top: 10px;">Ajuste y optimización del modelo para la tarea específica de clasificación.</p>
+                    </div>
+                    <div class="problem-card">
+                        <h4>🔍 c) Explicabilidad</h4>
+                        <p style="margin-top: 10px;">Implementación de <strong>Grad-CAM</strong> para interpretación de resultados.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🚀 Demostración del Prototipo</h4>
+                <p style="font-size: 1.1em; margin-top: 15px;">
+                    Sistema funcional capaz de clasificar imágenes en tiempo real, 
+                    con explicaciones visuales de las decisiones del modelo.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Resultados -->
+        <div class="slide fade-in">
+            <h2>📊 4. Resultados, Desafíos y Conclusiones</h2>
+            
+            <div class="content-section">
+                <h3>🏆 Resultados Obtenidos</h3>
+                <div class="metrics-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Métrica \ Modelo</th>
+                                <th>MLP</th>
+                                <th>CNN</th>
+                                <th>Transfer Learning + FT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Accuracy</strong></td>
+                                <td>0.93</td>
+                                <td>0.94</td>
+                                <td><span class="best-score">0.96</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Precisión (macro avg)</strong></td>
+                                <td>0.75</td>
+                                <td><span class="best-score">0.88</span></td>
+                                <td>0.87</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Recall (macro avg)</strong></td>
+                                <td>0.67</td>
+                                <td>0.70</td>
+                                <td><span class="best-score">0.84</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>F1 (macro avg)</strong></td>
+                                <td>0.69</td>
+                                <td>0.72</td>
+                                <td><span class="best-score">0.85</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Desafíos y Conclusiones -->
+        <div class="slide fade-in">
+            <h2>🎯 Desafíos y Conclusiones</h2>
+            
+            <div class="content-section">
+                <h3>⚠️ Principales Desafíos</h3>
+                <div class="challenges-grid">
+                    <div class="challenge-card">
+                        <h4>🖼️ Procesamiento de Imágenes</h4>
+                        <p>Extracción y clasificación individual de rostros desde imágenes complejas y dataset <strong>desbalanceado</strong></p>
+                    </div>
+                    <div class="challenge-card">
+                        <h4>💻 Recursos Computacionales</h4>
+                        <p>Limitaciones de hardware para entrenar modelos complejos</p>
+                    </div>
+                    <div class="challenge-card">
+                        <h4>🔧 Incompatibilidad de Librerías</h4>
+                        <p>Gestión de versiones y dependencias del ecosistema Python</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>✅ Conclusiones Principales</h3>
+                <div class="conclusions-list">
+                    <ul>
+                        <li>Transfer Learning demostró ser la técnica más efectiva para esta tarea</li>
+                        <li>EfficientNetB0 proporcionó un excelente balance entre rendimiento y eficiencia</li>
+                        <li>El fine-tuning selectivo mejoró aún más el rendimiento en las clases minoritarias</li>
+                        <li>La aplicación tiene potencial real para implementación en entornos productivos</li>
+                        <li>Los resultados superaron el objetivo inicial del 90% de accuracy</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="scrollToTop()">↑ Inicio</button>
+        <button class="nav-btn" onclick="window.print()">🖨️ Imprimir</button>
+    </div>
+
+    <script>
+        // Animaciones de entrada
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observar todos los slides
+        document.querySelectorAll('.fade-in').forEach(slide => {
+            observer.observe(slide);
+        });
+
+        // Función para ir al inicio
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Navegación suave entre secciones
+        document.querySelectorAll('.index-item').forEach((item, index) => {
+            item.addEventListener('click', () => {
+                const slides = document.querySelectorAll('.slide');
+                if (slides[index + 2]) { // +2 porque las primeras dos son portada y sumario
+                    slides[index + 2].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Efectos de hover mejorados para las cards
+        document.querySelectorAll('.problem-card, .challenge-card, .timeline-item').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Animación inicial
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.querySelector('.title-slide').classList.add('visible');
+            }, 300);
+        });
+    </script>
+</body>
+</html>
