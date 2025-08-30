@@ -5,4 +5,5 @@ Proyecto del grupo 5 de Deep Learning 2025 para detección de tapabocas. Integra
 - El notebook final con el desarrollo del modelo es facemask_p3_final.ipynb
 - En la carpeta export se encuentra el modelo junto con sus archivos de configuración y etiquetas para poder utilizarlo
 - En la carpeta Dataset esta el set de datos utilizado para el entrenamiento del modelo, obtenido de Kaggle - Face mask detection (https://www.kaggle.com/datasets/andrewmvd/face-mask-detection).
-- Se encuentra en la raíz del proyecto el video final del equipo con el recorrido del proyecto final "Práctica 4 – Proyecto Grupal - DeepLearning 2025 Grupo 5.mp4"
+
+Vudeo final del equipo con el recorrido del proyecto https://umontevideo-my.sharepoint.com/:v:/g/personal/ddgarcia_correo_um_edu_uy/EYb3xIDg5MxOuzVCvT2nLOYB6p-H2O3AsJTexDUFLkfhSg  
